@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Photo Bomber</string>
+    <string name="meme_directory">/PhotoBomber</string>
+    <string name="meme_prefix">photobomber</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="version">Version 0.0.1</string>
+    <string name="ok">OK</string>
+    <string name="copy_button">Copy</string>
+    <string name="stop_button">Stop</string>
+    <string name="browse_button">Browse for a picture</string>
+    <string name="default_num_of_pics_to_download">10</string>
+    <string name="share_after_copy_checkbox">Share after copying</string>
+    <string name="delete_after_share_checkbox">Delete after sharing</string>
+    <string name="file_provider_authority" translatable="false">com.example.in2de.photobomber.fileprovider</string>
+    <string name="preferences_name">com.example.in2de.photobomber.preferences</string>
+</resources>
