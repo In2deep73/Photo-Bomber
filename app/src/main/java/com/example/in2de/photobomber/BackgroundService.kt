@@ -22,28 +22,13 @@ import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT
 import android.support.v4.app.NotificationManagerCompat
 import android.app.PendingIntent
-import android.os.Binder
-import com.example.in2de.photobomber.MainActivity
 
 private const val NOTIFICATION_ID = 101
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class BackgroundService : Service() {
-
-    private val binder = MyBinder()
-    private var isRunning = false
-
-    override fun onBind(p0: Intent?): IBinder {
-        return binder
-    }
-
-    private fun startForegroundNotification() {
-
-    }
-
-    fun stop() {
-        Log.d("t777", "stopbind")
-        isRunning = false
+    override fun onBind(p0: Intent?): IBinder? {
+        return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -62,7 +47,6 @@ class BackgroundService : Service() {
         val pIntent = PendingIntent.getActivity(this, 0, intent2,
                 PendingIntent.FLAG_UPDATE_CURRENT)
 
-
         val nmc = NotificationManagerCompat.from(this)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
         val notification = notificationBuilder
@@ -79,7 +63,6 @@ class BackgroundService : Service() {
         startForeground(NOTIFICATION_ID, notification)
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        val safeCopyEnabled = prefs.getBoolean("safecopy_switch", true)
 
         val bundle = intent?.extras
         if (bundle != null) {
@@ -94,9 +77,7 @@ class BackgroundService : Service() {
 
 
                 val offset = findStartingIndex(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath + getString(R.string.meme_directory))
-                isRunning = true
                 val r = Runnable {
-                    Log.d("t64", "top " + imageUri.toString())
                     val ish = contentResolver.openInputStream(Uri.parse(imageUri.toString()))
                     val bitmap = BitmapFactory.decodeStream(ish)
                     val bitmapHardCopy = bitmap
@@ -117,9 +98,6 @@ class BackgroundService : Service() {
                         }
                         val filename = getString(R.string.meme_prefix) + i + ".jpg"
                         val dest = File(sd, filename)
-                        if(i==(offset+1)) //myPreferences.setImageUri(dest.toString())
-                        //todo above needs to be content scheme?
-                            Log.d("t799", dest.toString())
                         try {
                             val out = FileOutputStream(dest)
                             bitmap.compress(Bitmap.CompressFormat.JPEG, Integer.parseInt(quality.toString()), out)
@@ -129,9 +107,6 @@ class BackgroundService : Service() {
 
                             uris.add(Uri.parse(dest.toString()))
                             files.add(dest)
-
-                            Log.d("t799", dest.toString())
-                            //Log.d("t567", Uri.fromFile(dest).toString())
                         } catch (e: FileNotFoundException) {
                             e.printStackTrace()
                         } catch (e: IOException) {
@@ -175,11 +150,7 @@ class BackgroundService : Service() {
                                 .setProgress(0,0,false).build()
                         nmc.notify(101, notificationBuilder.build())
                     }
-
-
                     stopForeground(false)
-
-                    isRunning = false
                     myPreferences.setIsCopying(false)
                 }
                 val t = Thread(r)
@@ -187,10 +158,6 @@ class BackgroundService : Service() {
             }
         }
         return START_STICKY
-    }
-
-    private fun saveGui(){
-
     }
 
     private fun startBroadcastIntent(done: Int, total: Int, offset: Int, bytesForOnePicture: Long, imageUri: String) {
@@ -230,47 +197,4 @@ class BackgroundService : Service() {
         service.createNotificationChannel(chan)
         return channelId
     }
-
-    // Might put something like this in background service at some point to dynamically calculate
-    // space needed for copy operation
-    /*private fun saveATempFileAndPopulateTextView(){
-
-        val ish = contentResolver.openInputStream(Uri.parse(receivedUri.toString()))
-        val bitmap = BitmapFactory.decodeStream(ish)
-        ish!!.close()
-
-        val filePath = Environment.getExternalStorageDirectory().absolutePath + getString(R.string.meme_directory)
-        val sd = File(filePath)
-        sd.mkdirs()
-
-        val filePathTemp = Environment.getExternalStorageDirectory().absolutePath + getString(R.string.meme_directory) + "/.temp"
-        val sdTemp = File(filePathTemp)
-        sdTemp.mkdirs()
-
-        val filename = "tempphotobomber.jpg"
-        val dest = File(sdTemp, filename)
-        try {
-            val out = FileOutputStream(dest)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-            out.flush()
-            out.close()
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        if (et1.text.equals("")){
-            textViewStorage.append("No space required")
-        }else{
-            textViewStorage.append(StorageUtils().formatSize((dest.length()
-                    *Integer.parseInt(et1.text.toString()))) + " needed to do this copy")
-        }
-    }*/
-
-    inner class MyBinder : Binder() {
-        fun getService(): BackgroundService {
-            return this@BackgroundService
-        }
-    }
-
 }

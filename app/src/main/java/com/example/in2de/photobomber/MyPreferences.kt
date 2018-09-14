@@ -57,8 +57,6 @@ class MyPreferences(context:Context){
         editor.apply()
     }
 
-    //todo add here to set if share intent should be tried
-
     fun doneCopyingAndOnDestroy(){
         setImageUri("null")
     }

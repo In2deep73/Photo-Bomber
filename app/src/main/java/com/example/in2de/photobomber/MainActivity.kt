@@ -30,15 +30,6 @@ private const val PICK_IMAGE = 100
 
 class MainActivity : AppCompatActivity() {
 
-    var myService: BackgroundService? = null
-    var isBound = false
-
-    private fun restoreGuiFromSharedPrefs(){
-
-
-    }
-    //var notificationmanager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
     private lateinit var copyIntent:Intent
     private lateinit var receivedUri: Uri
     private lateinit var uriArray: ArrayList<Uri>
@@ -80,27 +71,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-/*    private val myConnection = object : ServiceConnection {
-        override fun onServiceConnected(className: ComponentName,
-                                        service: IBinder) {
-            val binder = service as BackgroundService.MyBinder
-            myService = binder.getService()
-            isBound = true
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            isBound = false
-        }
-    }*/
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val myPreferences = MyPreferences(this)
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         copyIntent = Intent(baseContext, BackgroundService::class.java)
-        //bindService(copyIntent, myConnection, Context.BIND_AUTO_CREATE)
-        //todo other options here
-        //val whatsapp mode
         ctx = this
         permissionsCheck(ctx, permissions)
         setContentView(R.layout.activity_main)
@@ -117,16 +92,11 @@ class MainActivity : AppCompatActivity() {
             textView.text = myPreferences.getProgressBarMessage()
         }
 
-        if (tryToPopulateImageView()) {
-            Log.d("t545", "try to pop")
-            //todo this thinks its being opened via intent when it shouldnt
-            // app opened via share intent - reset prefs
-        }else{
+        if (!tryToPopulateImageView()) {
             if(myPreferences.getImageUri()!="null"){
                 receivedUri = Uri.parse(myPreferences.getImageUri())
                 tryToPopulateImageView()
             }
-
         }
     }
 
@@ -137,13 +107,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("t5533","ondest")
-        //if (myConnection != null) {
-        //unbindService(myConnection)
-        //}
         val myPreferences = MyPreferences(this)
         if(!myPreferences.getIsCopying()){
-            //todo restore gui to defaults
             myPreferences.setImageUri("null")
             myPreferences.setIsShareCbChecked(true)
         }
@@ -213,14 +178,12 @@ class MainActivity : AppCompatActivity() {
             if (myPreferences.getIsCopying()) {
                 myPreferences.setIsCopying(false)
                 toggleAndLockGui(true)
-                Log.d("t64", "stop")
             } else if (btnbrowse.visibility == View.INVISIBLE && et1.length() > 0) {
                 val myPreferences = MyPreferences(this)
                 myPreferences.setIsCopying(true)
                 myPreferences.setIsShareCbChecked(cbshare.isChecked)
                 myPreferences.setImageUri(receivedUri.toString())
                 startIntentToBackgroundService("copy", receivedUri, Integer.parseInt(et1.text.toString()))
-                Log.d("t999", receivedUri.toString())
             }
         }
         btnbrowse.setOnClickListener {
@@ -330,19 +293,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun toggleAndLockGui(bool: Boolean) {
-        //cbdelete.isClickable = bool
         cbshare.isClickable = bool
         picture.isClickable = bool
         if (!bool) {
-            //button1.setText(getString(R.string.stop_button))
             button1.setBackgroundResource(R.drawable.stopbuttonpng)
             progressBar.visibility = View.VISIBLE
             Log.d("t554",sharetext.inputType.toString())
             sharetext.inputType = 0
         } else {
-            //button1.setText(getString(R.string.copy_button))
             button1.setBackgroundResource(R.drawable.buttoncopypng)
-            //progressBar.visibility = View.INVISIBLE
             sharetext.inputType=131073
         }
     }

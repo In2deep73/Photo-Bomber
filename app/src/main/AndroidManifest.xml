@@ -28,9 +28,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="image/*" />
-                <data android:mimeType="text/*" />
             </intent-filter>
         </activity>
 
@@ -38,8 +36,6 @@
             android:name=".BackgroundService"
             android:enabled="true"
             android:exported="true" />
-
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -49,9 +45,5 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_provider_path" />
         </provider>
-
-
-
-
     </application>
 </manifest>

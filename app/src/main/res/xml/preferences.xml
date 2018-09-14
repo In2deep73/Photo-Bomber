@@ -7,11 +7,11 @@
         android:summary="The app will never let you make any more copies than this"
         android:title="Max number of copies to make"
         android:defaultValue="100"/>
-    <SwitchPreference
+    <!--<SwitchPreference
         android:defaultValue="true"
         android:key="safecopy_switch"
         android:summary="Do not under any circumstances let me complete an operation that will leave me with 1GiB or less free space"
-        android:title="SafeCopy" />
+        android:title="SafeCopy" />-->
     <EditTextPreference
         android:dialogTitle="Select the quality of copied images (1-100)"
         android:inputType="number"
